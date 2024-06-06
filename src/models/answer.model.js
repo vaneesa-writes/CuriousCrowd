@@ -22,6 +22,8 @@ const answerSchema = new Schema({
     }
 });
 
+answerSchema.index({questionId : 1});
+
 const Answer = mongoose.model('Answer', answerSchema);
 
 module.exports = Answer;

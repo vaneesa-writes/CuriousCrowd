@@ -24,6 +24,8 @@ const questionSchema = new mongoose.Schema({
     }
 });
 
+questionSchema.index({userId : 1});
+
 const Question = mongoose.model('Question', questionSchema);
 
 module.exports = Question;

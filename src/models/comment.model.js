@@ -27,6 +27,8 @@ const commentSchema = new Schema({
     }
 });
 
+commentSchema.index({parentModel : 1});
+
 const Comment = mongoose.model('Comment', commentSchema);
 
 module.exports = Comment;
