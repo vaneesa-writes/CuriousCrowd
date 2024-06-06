@@ -25,6 +25,7 @@ const questionSchema = new mongoose.Schema({
 });
 
 questionSchema.index({userId : 1});
+questionSchema.index({topics : 1});
 
 const Question = mongoose.model('Question', questionSchema);
 
