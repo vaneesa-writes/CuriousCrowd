@@ -18,11 +18,26 @@ class QuestionService{
             page: parseInt(page) || 1,
             limit: parseInt(limit) || 10
         };
+        if(tags){
+            for (const tag of tags){
+                if(!isValidMongoObjectId(tag)){
+                    console.log(tag);
+                    throw new NotFoundError("Topic Id",tag);
+                }
+            }
+        }
         return await this.questionRepo.searchQuestion({topics : tags, text : text},pagination);
     }
 
     async createAnswer(questionId,userId,text){
+        if(!isValidMongoObjectId(userId)){
+            throw new NotFoundError("User Id",userId);
+        }
+        if(!isValidMongoObjectId(questionId)){
+            throw new NotFoundError("Question Id",questionId);
+        }
         const answerData = {questionId : questionId, userId : userId, text : text};
+        console.log(answerData);
         return await this.questionRepo.createAnswer(answerData);
     }
 }
