@@ -23,7 +23,9 @@ const searchQuestion = async (req,res,next) =>{
     try{
         const text = req.body.text;
         const tags = req.body.tags;
-        const questions = await questionService.searchQuestion(text,tags);
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const questions = await questionService.searchQuestion(text,tags,page,limit);
         return res.status(StatusCodes.OK).json({
             success: true,
             message: "Successfully fetched the questions",
@@ -41,7 +43,9 @@ const createAnswer = async (req, res, next) => {
         const questionId = req.params.questionId;
         const userId = req.body.userId;
         const text = req.body.text;
-        const answer = await questionService.createAnswer(questionId, userId, text);
+        const page = req.query.page;
+        const limit = req.query.limit;
+        const answer = await questionService.createAnswer(questionId, userId, text, page, limit);
         return res.status(StatusCodes.CREATED).json({
             success: true,
             message: "Successfully created the answer.",

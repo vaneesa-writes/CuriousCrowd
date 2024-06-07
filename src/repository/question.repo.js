@@ -2,7 +2,7 @@ const Question = require("../models/question.model");
 const {isEmptyObject} = require("../utility");
 const BadRequestError = require("../error/badRequestError");
 const NotFoundError = require("../error/notFoundError");
-const {Answer, User} = require("../models");
+const {Answer, User, Topic} = require("../models");
 
 class QuestionRepo {
     async createQuestion(questionData) {
@@ -15,20 +15,41 @@ class QuestionRepo {
 
     async searchQuestion(filter, pagination = {}) {
         const query = {};
+
+        // Array to hold the conditions for the $or operator
+        const orConditions = [];
+
+        // Topics condition
         if (filter.topics) {
-            query.topics = {$in: filter.topics};
-        }
-        if (filter.text) {
-            query.$or = [{title: {$regex: filter.text, $options: 'i'}}, {
-                body: {
-                    $regex: filter.text,
-                    $options: 'i'
+            for (const topic of filter.topics) {
+                if (!await Topic.findById(topic)) {
+                    console.log("Not found topic");
+                    throw new NotFoundError("Topic", topic);
                 }
-            }]
+            }
+            orConditions.push({ topics: { $in: filter.topics } });
         }
-        if(isEmptyObject(query)){
-           throw new BadRequestError("text and tag");
+
+        // Text condition
+        if (filter.text) {
+            orConditions.push({
+                $or: [
+                    { title: { $regex: filter.text, $options: 'i' } },
+                    { body: { $regex: filter.text, $options: 'i' } }
+                ]
+            });
         }
+
+        // Add the $or conditions to the query if there are any
+        if (orConditions.length > 0) {
+            query.$or = orConditions;
+        }
+
+        // If query object is still empty, throw BadRequestError
+        if (isEmptyObject(query)) {
+            throw new BadRequestError("text and tag");
+        }
+
         const { page = 1, limit = 10 } = pagination;
         const skip = (page - 1) * limit;
 
@@ -37,7 +58,7 @@ class QuestionRepo {
             .populate('userId', 'username')  // Populate userId with only the username field
             .skip(skip)
             .limit(limit)
-            .sort({createdAt: -1});
+            .sort({ createdAt: -1 });
     }
 
     async createAnswer(answerData){

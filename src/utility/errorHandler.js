@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const BaseError = require("../error/base.error");
 
-function errorHandler(err, req, res, next) {
+const errorHandler = function (err, req, res, next) {
   if (err instanceof BaseError) {
     return res.status(err.statusCode).json({
       success: false,
@@ -16,6 +16,6 @@ function errorHandler(err, req, res, next) {
     error: err,
     data: {}, // because this is an exception so no data is going tobe provided
   });
-}
+};
 
 module.exports = errorHandler;
