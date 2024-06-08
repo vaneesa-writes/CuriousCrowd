@@ -27,7 +27,7 @@ const commentSchema = new Schema({
     }
 });
 
-commentSchema.index({parentModel : 1});
+commentSchema.index({parentId : 1});
 
 const Comment = mongoose.model('Comment', commentSchema);
 
